@@ -1,0 +1,33 @@
+# Every push to main and every PR: the manifests, and each extension's tests
+# inside famstack. Everything the job checks lives in script/cibuild, so it
+# runs the same on a laptop.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    env:
+      # The famstack the extensions are built against: 0.5 is still on its
+      # integration branch. Switch to main once 0.5.0 is released.
+      FAMSTACK_REF: feature/0.5.0-beta.1
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/checkout@v4
+        with:
+          repository: famstack-dev/famstack
+          ref: ${{ env.FAMSTACK_REF }}
+          path: .famstack
+
+      - uses: astral-sh/setup-uv@v5
+
+      - name: script/cibuild
+        env:
+          FAMSTACK_REPO: ${{ github.workspace }}/.famstack
+        run: script/cibuild

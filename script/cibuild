@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# script/cibuild: everything CI checks, so it runs the same on a laptop.
+#
+#   FAMSTACK_REPO=<famstack checkout> script/cibuild
+#
+# 1. Every extension's manifest (script/check-manifests.py).
+# 2. Every extension's tests, in famstack's test environment: an extension
+#    runs inside the stack, so its tests import famstack's framework from
+#    FAMSTACK_REPO.
+set -euo pipefail
+shopt -s nullglob
+cd "$(dirname "$0")/.."
+
+: "${FAMSTACK_REPO:?Set FAMSTACK_REPO to a famstack checkout}"
+export FAMSTACK_REPO
+
+run() { uv run --quiet --project "$FAMSTACK_REPO" --extra test "$@"; }
+
+run python script/check-manifests.py "$FAMSTACK_REPO"
+
+for tests in */tests; do
+    echo "== ${tests%/tests}"
+    run pytest -q "$tests"
+done

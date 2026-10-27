@@ -1,0 +1,27 @@
+# hue: the family's Philips Hue lights from the stack, locally.
+#
+# An extension stacklet (it lives in the instance's extension directory,
+# ~/<[core] name>-extensions/hue). It runs no container: each command talks
+# to the Hue Bridge on the home network over its local API, never through
+# the Philips cloud, so there is nothing to `stack up`.
+#
+#   ./stack hue setup                       find the bridge, pair with its button
+#   ./stack hue scene list                  the scenes, by room
+#   ./stack hue scene relax living room     call up a scene
+#   ./stack hue brightness office 50        a room, zone, lamp or "all"
+#   ./stack hue off living room             and on, status
+#
+# README.md says what was tested and how the bridge's key is kept.
+
+id          = "hue"
+name        = "Hue lights"
+description = "Philips Hue scenes, brightness, on and off over the bridge's local API"
+version     = "0.1.0"
+category    = "home"
+type        = "host"
+stage       = "incubating"
+
+hints = [
+    "Pair with the bridge (press its button when asked): ./stack hue setup",
+    "Then: ./stack hue status, ./stack hue scene list",
+]
