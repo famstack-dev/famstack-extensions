@@ -1,71 +1,21 @@
-"""conftest.py: a fabricated stack instance with this extension, and a fake Hue Bridge.
+"""The hue extension's tests: the lane's fixtures, plus a stand-in Hue Bridge.
 
-Run the tests with famstack's test environment, from anywhere:
-
-    FAMSTACK_REPO=<famstack checkout> \\
-        uv run --project "$FAMSTACK_REPO" --extra test pytest hue/tests
-
-`FAMSTACK_REPO` is required: hue runs inside the stack, so its tests
-import famstack's framework from that checkout. The commands run as
-`./stack hue <cmd>` runs them, through `Stack.run_cli_command`. The bridge
-is `FakeBridge` (`fake_bridge.py`) on localhost over HTTPS, with
-certificates made for the session by `openssl`; nothing here reaches the
-real network.
+The extension lane (`script/test extension hue`, from a famstack checkout)
+gives every test `stack`: hue installed and up in a made-up instance, where
+each `stack.run("hue", ...)` is a real `./stack hue ...` process. This file
+adds the bridge, `FakeBridge` (`fake_bridge.py`), on localhost over HTTPS
+with certificates made for the session by `openssl`, and two states of the
+instance: `unpaired` (its `[hue]` names the bridge's port, before `stack hue
+setup`) and `paired` (after it). Nothing here reaches the real network.
 """
 
 from __future__ import annotations
 
-import os
 import subprocess
-import sys
 from pathlib import Path
 
 import pytest
-
-EXTENSION = Path(__file__).resolve().parents[1]
-FAMSTACK = Path(os.environ.get("FAMSTACK_REPO", "")).expanduser()
-
-if not (FAMSTACK / "lib" / "stack").is_dir():
-    pytest.exit("Set FAMSTACK_REPO to a famstack checkout: hue's tests run it inside the stack.",
-                returncode=2)
-if str(FAMSTACK / "lib") not in sys.path:
-    sys.path.insert(0, str(FAMSTACK / "lib"))
-
 from fake_bridge import FakeBridge
-
-
-def write_instance(root: Path, hue_section: str) -> Path:
-    """A minimal instance under `root` whose only extension directory is
-    the one holding this stacklet, with `hue_section` as its [hue]."""
-    instance = root / "instance"
-    (instance / ".stack").mkdir(parents=True)
-    (root / "data").mkdir()
-    (instance / "stack.toml").write_text(
-        f'[core]\nname = "stack"\ndomain = ""\nhost = "127.0.0.1"\n'
-        f'data_dir = "{root / "data"}"\nextension_dirs = ["{EXTENSION.parent}"]\n'
-        f'timezone = "Europe/Berlin"\nlanguage = "en"\n\n{hue_section}',
-        encoding="utf-8")
-    (instance / "users.toml").write_text("", encoding="utf-8")
-    (instance / ".stack" / "secrets.toml").write_text("", encoding="utf-8")
-    return instance
-
-
-class Stack:
-    """`./stack hue ...` for one fabricated instance."""
-
-    def __init__(self, instance: Path):
-        from stack import Stack as RealStack
-        from stack.output import CollectorOutput
-        self.instance = instance
-        self.data = instance.parent / "data"
-        self._stack = RealStack(root=FAMSTACK, data=self.data,
-                                instance_dir=instance, output=CollectorOutput())
-
-    def hue(self, command: str, *args: str) -> dict:
-        return self._stack.run_cli_command("hue", command, list(args)) or {}
-
-    def stack_toml(self) -> str:
-        return (self.instance / "stack.toml").read_text()
 
 
 def make_certificate(directory: Path) -> tuple[Path, Path]:
@@ -95,10 +45,19 @@ def bridge(certificate):
 
 
 @pytest.fixture
-def stack(tmp_path, bridge) -> Stack:
-    """An instance where `stack hue setup` already ran against `bridge`."""
-    stack = Stack(write_instance(tmp_path, bridge.config(host=False)))
-    bridge.press_button()
-    answer = stack.hue("setup", "127.0.0.1")
-    assert "error" not in answer, answer
+def unpaired(stack, bridge):
+    """hue before `stack hue setup`: the instance's `[hue]` names the
+    bridge's port and no address, as the admin finds it after
+    `stack extensions add hue`, with the bridge on a port of its own."""
+    toml = stack.instance / "stack.toml"
+    toml.write_text(toml.read_text() + "\n" + bridge.config(host=False))
     return stack
+
+
+@pytest.fixture
+def paired(unpaired, bridge):
+    """hue after `stack hue setup` ran against `bridge`, button pressed."""
+    bridge.press_button()
+    ran = unpaired.run("hue", "setup", "127.0.0.1", "--json")
+    assert ran.code == 0, ran
+    return unpaired
