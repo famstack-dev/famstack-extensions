@@ -14,7 +14,8 @@ famstack-extensions/
 ├── <id>/                 one extension per root folder, never deeper
 │   ├── stacklet.toml     id = folder name
 │   ├── README.md         what it does, setup, what was tested on which hardware
-│   └── tests/            run inside famstack (FAMSTACK_REPO)
+│   └── tests/            run inside famstack, through its extension lane
+├── docs/testing.md       how to test an extension, and the pitfalls
 ├── script/cibuild        everything CI checks; runs the same on a laptop
 ├── script/check-manifests.py
 └── .github/workflows/ci.yml
@@ -30,9 +31,13 @@ famstack-extensions/
   it imports nothing from outside its own folder.
 - **Made-up data only.** Tests, examples and docstrings never carry a real
   address, device ID, room or person's name. Fabricate them.
-- **Tests run inside famstack**, the way `./stack <id> <cmd>` runs, through
-  `Stack.run_cli_command`. `FAMSTACK_REPO` names the famstack checkout; CI uses
-  the branch in `.github/workflows/ci.yml` (`FAMSTACK_REF`).
+- **Tests run inside famstack**, through its extension lane:
+  `"$FAMSTACK_REPO/script/test" extension <id>`. A test drives `./stack <id>
+  <cmd>` as a process (the fixture `stack`), stands in for every service by its
+  container address, and imports the extension's modules only as
+  `stacklets.<id>.*`, never through `sys.path`. `docs/testing.md` has how and
+  the pitfalls. CI uses the famstack branch in `.github/workflows/ci.yml`
+  (`FAMSTACK_REF`).
 - **Other makers' names only to say what an extension works with.** The
   manifest's `name` combines a brand with plain words ("Hue lights", never
   "Hue" alone), no logos, and the README says the extension is not affiliated
