@@ -142,14 +142,15 @@ tests/        the commands against a stand-in bridge that answers like the real 
 ## Tests
 
 ```
-FAMSTACK_REPO=<famstack checkout> \
-    uv run --project "$FAMSTACK_REPO" --extra test pytest hue/tests
+"$FAMSTACK_REPO/script/test" extension hue
 ```
 
-22 tests, about 4 seconds, nothing leaves localhost. They need `openssl`
-for the stand-in bridge's certificates, and `FAMSTACK_REPO` for the
-framework they run hue in. `script/cibuild` at the repo root runs them
-with every other extension's.
+22 tests, about 4 seconds, nothing leaves localhost. Each test runs
+`./stack hue <command>` as a process, in a made-up instance of a famstack
+checkout (`FAMSTACK_REPO`). They need `openssl` for the stand-in bridge's
+certificates. `script/cibuild` at the repo root runs them with every other
+extension's. [docs/testing.md](../docs/testing.md) explains the extension
+lane.
 
 ## Trademark
 
