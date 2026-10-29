@@ -27,6 +27,9 @@ famstack-extensions/
   repo root, no extension inside another's folder. `script/check-manifests.py`
   enforces it, and refuses an `id` famstack ships in `stacklets/` (the release
   wins that clash, so the extension would never load).
+- **Ports 42100 to 42199**, the range famstack's ADR-007 keeps for extensions:
+  `port`, `[ports]` and each compose binding's host port. No two extensions
+  share a port. `script/check-manifests.py` enforces both.
 - **An extension stands alone.** It is copied without the rest of the repo, so
   it imports nothing from outside its own folder.
 - **Made-up data only.** Tests, examples and docstrings never carry a real

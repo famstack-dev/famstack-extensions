@@ -11,6 +11,11 @@ instance's extension folder, and famstack's discovery there reads
   agree;
 - not take an `id` famstack ships in `stacklets/`: discovery lets the
   release win that clash, so the extension would never load.
+- publish its ports in 42100 to 42199 (famstack's ADR-007), the range for
+  extensions: `port`, `[ports]` and the host side of each port binding in
+  its `docker-compose.yml`. famstack's own stacklets use the rest of 42xxx,
+  so an extension there could take a port a family's stack already uses.
+  Two extensions on one port are refused too, because a family may run both.
 
 A manifest at the repo root is refused: the installer would read this repo
 as one single extension instead of a catalog.
@@ -21,6 +26,7 @@ Prints one line per problem and exits 1 if there was any. Needs Python 3.11
 
 from __future__ import annotations
 
+import re
 import sys
 import tomllib
 from collections.abc import Iterator
@@ -28,6 +34,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 REQUIRED = ("id", "name", "description")
+EXTENSION_PORTS = range(42100, 42200)
+
+# The host port of a compose binding: `"${PORT_BIND_IP:-127.0.0.1}:42100:8080"`
+# or `- 42100:8080`, the number before the container's port.
+_BINDING = re.compile(r"(\d+):\d+(?:/(?:tcp|udp))?[\"']?\s*$")
 
 
 def shipped_ids(famstack: Path) -> set[str]:
@@ -40,10 +51,24 @@ def shipped_ids(famstack: Path) -> set[str]:
     return ids
 
 
+def ports_of(folder: Path, manifest: dict) -> set[int]:
+    """The host ports an extension publishes: its manifest's `port` and
+    `[ports]`, and the host side of its compose bindings."""
+    ports = {manifest["port"]} if isinstance(manifest.get("port"), int) else set()
+    ports |= {p for p in (manifest.get("ports") or {}).values() if isinstance(p, int)}
+    compose = folder / "docker-compose.yml"
+    if compose.is_file():
+        for line in compose.read_text(encoding="utf-8").splitlines():
+            if match := _BINDING.search(line.split("#", 1)[0]):
+                ports.add(int(match.group(1)))
+    return ports
+
+
 def problems(root: Path, shipped: set[str]) -> Iterator[str]:
     """Every rule above that a folder in `root` breaks, one line each."""
     if (root / "stacklet.toml").exists():
         yield "stacklet.toml at the repo root: extensions live one folder down"
+    taken: dict[int, str] = {}
     for manifest in sorted(root.glob("*/stacklet.toml")):
         folder = manifest.parent.name
         try:
@@ -58,6 +83,12 @@ def problems(root: Path, shipped: set[str]) -> Iterator[str]:
             yield f"{folder}: id is '{raw['id']}'; name the folder after it"
         if raw.get("id", folder) in shipped:
             yield f"{folder}: famstack already ships a stacklet with this id"
+        for port in sorted(ports_of(manifest.parent, raw)):
+            if port not in EXTENSION_PORTS:
+                yield f"{folder}: port {port} is outside 42100-42199, the range for extensions"
+            elif port in taken:
+                yield f"{folder}: port {port} is {taken[port]}'s already"
+            taken.setdefault(port, folder)
 
 
 def main(argv: list[str]) -> int:
