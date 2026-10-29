@@ -7,6 +7,7 @@ for the core. Each folder here is one extension.
 | Extension | What it does | Stage |
 |---|---|---|
 | [hue](hue/) | Philips Hue scenes, brightness, on and off over the bridge's local API. No Philips cloud. | incubating |
+| [web](web/) | Private web search through your own SearXNG, and a question answered from the results with its sources. | incubating |
 
 The extensions here follow famstack's integration branch, `feature/0.5.0-beta.1`.
 They need famstack 0.5, which is not released yet.
@@ -63,5 +64,5 @@ FAMSTACK_REPO=<your famstack checkout> script/cibuild
 
 AGPL-3.0, like famstack.
 
-Product names here (Philips Hue and others) are trademarks of their owners. The
+Product names here (Philips Hue, SearXNG and others) are trademarks of their owners. The
 extensions are not affiliated with or endorsed by them.

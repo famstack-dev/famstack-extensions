@@ -1,0 +1,106 @@
+{
+  "query": "immich vs photoprism",
+  "number_of_results": 0,
+  "results": [
+    {
+      "title": "Immich vs PhotoPrism: which self-hosted photo manager",
+      "url": "https://example.com/immich-vs-photoprism",
+      "content": "Both index a library and serve it over the LAN. Immich keeps the original RAW file and shows a preview; PhotoPrism converts RAW for display.",
+      "engine": "brave",
+      "engines": [
+        "brave"
+      ],
+      "score": 1.0
+    },
+    {
+      "title": "Self-hosted photos for a family of four",
+      "url": "https://example.org/family-photo-server",
+      "content": "We moved twenty years of photos from a cloud service to a Mac mini. Face grouping took one night for 60,000 photos.",
+      "engine": "duckduckgo",
+      "engines": [
+        "duckduckgo"
+      ],
+      "score": 0.95
+    },
+    {
+      "title": "Immich 2.1 released",
+      "url": "https://example.net/immich-2-1",
+      "content": "",
+      "engine": "brave",
+      "engines": [
+        "brave"
+      ],
+      "score": 0.9
+    },
+    {
+      "title": "RAW files in Immich: what is kept",
+      "url": "https://example.com/immich-raw",
+      "content": "Uploads are stored as they arrive. A RAW file stays a RAW file;  the web view uses a\n\ngenerated JPEG preview.",
+      "engine": "duckduckgo",
+      "engines": [
+        "duckduckgo"
+      ],
+      "score": 0.85
+    },
+    {
+      "title": "PhotoPrism and RAW: the converter settings",
+      "url": "https://example.org/photoprism-raw",
+      "content": "PhotoPrism reads RAW through a converter and keeps a sidecar JPEG for the browser. Darktable or RawTherapee can do the conversion.",
+      "engine": "brave",
+      "engines": [
+        "brave"
+      ],
+      "score": 0.8
+    },
+    {
+      "title": "Choosing a photo server: a comparison table",
+      "url": "https://example.net/photo-server-table",
+      "content": "Immich, PhotoPrism and Nextcloud Memories side by side: mobile apps, face recognition, sharing, RAW support, hardware needs.",
+      "engine": "duckduckgo",
+      "engines": [
+        "duckduckgo"
+      ],
+      "score": 0.75
+    },
+    {
+      "title": "Backing up a self-hosted photo library",
+      "url": "https://example.com/photo-backup",
+      "content": "Back up the originals and the database. A library without its database loses albums, faces and descriptions.",
+      "engine": "brave",
+      "engines": [
+        "brave"
+      ],
+      "score": 0.7
+    },
+    {
+      "title": "Running a photo server on a Mac",
+      "url": "https://example.org/photo-server-mac",
+      "content": "Apple Silicon handles face recognition and video previews well; plan for disk space before anything else.",
+      "engine": "duckduckgo",
+      "engines": [
+        "duckduckgo"
+      ],
+      "score": 0.65
+    },
+    {
+      "title": "Photo apps for a home server, ranked",
+      "url": "https://example.net/photo-apps-ranked",
+      "content": "Our ranking after a year with each: Immich first for families, PhotoPrism first for photographers with large RAW archives.",
+      "engine": "brave",
+      "engines": [
+        "brave"
+      ],
+      "score": 0.6
+    },
+    {
+      "title": "Moving from a cloud photo service",
+      "url": "https://example.com/leaving-the-cloud",
+      "content": "Export takes days for a large library. Check that dates and locations survive the export before deleting anything.",
+      "engine": "duckduckgo",
+      "engines": [
+        "duckduckgo"
+      ],
+      "score": 0.55
+    }
+  ]
+}

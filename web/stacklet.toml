@@ -1,0 +1,53 @@
+# web: search the internet privately, through the family's own SearXNG.
+#
+# An extension stacklet: `stack extensions add web` copies it into the
+# instance's extension directory (~/<[core] name>-extensions/web). It runs
+# one container, SearXNG, a metasearch engine: it forwards a query to
+# upstream search engines and merges their answers, so there is no index
+# to build and nothing to crawl.
+#
+#   ./stack up web
+#   ./stack web search "immich vs photoprism"         the results, with links
+#   ./stack web ask "does immich support raw files"   an answer from them, with sources
+#
+# Both commands do their work in core's bot runner (`bot/cli_entrypoint.py`),
+# which reaches SearXNG on the stack network and, for `ask`, the model.
+# Reading one web page is famstack's own: `stack core web fetch <url>`.
+#
+# README.md says what it does, what it does not, and what was tested.
+
+id          = "web"
+name        = "Web search"
+description = "Search the internet privately with your own SearXNG, and ask it questions"
+version     = "0.1.0"
+category    = "infrastructure"
+stage       = "incubating"
+port        = 42100
+
+hints = [
+    "Search at {url}",
+    "From the terminal: ./stack web search \"immich vs photoprism\"",
+    "Ask a question: ./stack web ask \"does immich support raw files\"",
+]
+
+[upstream]
+image   = "searxng/searxng"
+channel = "patch"
+
+# Minted per install and kept in the stack's secret store, never in the
+# repo. SearXNG signs its session cookie with it; the image's default is
+# the literal string "ultrasecretkey".
+[env]
+generate = ["WEB_SECRET"]
+
+[env.defaults]
+# No data dir: SearXNG keeps no index and no state.
+TZ = "{timezone}"
+# SearXNG on the stack network, where the bot runner's work reaches it.
+# The published port is for people's browsers.
+SEARCH_URL = "http://stack-web-search:8080"
+
+[health]
+url     = "http://localhost:42100/healthz"
+expect  = "200"
+timeout = 60
