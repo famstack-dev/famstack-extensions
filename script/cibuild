@@ -4,9 +4,10 @@
 #   FAMSTACK_REPO=<famstack checkout> script/cibuild
 #
 # 1. Every extension's manifest (script/check-manifests.py).
-# 2. Every extension's tests, in famstack's test environment: an extension
-#    runs inside the stack, so its tests import famstack's framework from
-#    FAMSTACK_REPO.
+# 2. Every extension's tests, through famstack's extension lane
+#    (`script/test extension <folder>` in FAMSTACK_REPO): an extension runs
+#    inside the stack, so its tests run there too, each command as `./stack`
+#    runs it (docs/testing.md).
 set -euo pipefail
 shopt -s nullglob
 cd "$(dirname "$0")/.."
@@ -20,5 +21,5 @@ run python script/check-manifests.py "$FAMSTACK_REPO"
 
 for tests in */tests; do
     echo "== ${tests%/tests}"
-    run pytest -q "$tests"
+    "$FAMSTACK_REPO/script/test" extension "$PWD/${tests%/tests}" -q
 done
