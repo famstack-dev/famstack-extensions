@@ -66,6 +66,12 @@ To run one test file, give its path:
 "$FAMSTACK_REPO/script/test" extension web/tests/test_search.py
 ```
 
+The lane runs the tests in parallel, with one worker for each core. To run them in one process, for example to debug a test, add `-n 0`:
+
+```bash
+"$FAMSTACK_REPO/script/test" extension web -n 0
+```
+
 To run every check that CI runs, run:
 
 ```bash
