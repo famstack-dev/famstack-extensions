@@ -50,7 +50,8 @@ Open a pull request with:
 - one folder, named after the stacklet's `id`, with `stacklet.toml` at its top
   ([creating stacklets](https://github.com/famstack-dev/famstack/blob/main/docs/creating-stacklets.md));
 - a README: what it does, how to set it up, what was tested and on which hardware;
-- tests under `<id>/tests` that run inside famstack (see hue's);
+- tests under `<id>/tests` that run inside famstack, through its extension lane
+  ([testing an extension](docs/testing.md));
 - made-up data in tests and examples: no real addresses, device IDs or names.
 
 CI checks every manifest and runs every extension's tests against famstack. The
