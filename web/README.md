@@ -9,6 +9,7 @@ SearXNG is a metasearch engine. It sends a query to public search engines and me
 - `./stack web search "<query>"` lists the results, each with its link.
 - `./stack web ask "<question>"` answers the question from the top results, and lists the sources under the answer. The stack's AI model on your Mac writes the answer.
 - The search page is on port 42100 of your Mac, or at `web.<your domain>` in domain mode.
+- An agent that runs these commands for the family (Stacky) knows from `cli/status.toml` that they only read, and shows "Suche im Netz nach …" while one runs.
 
 The public search engines see the Mac, not a family member's account. The search words still go to those engines. Nothing else leaves the house.
 

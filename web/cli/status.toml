@@ -1,0 +1,20 @@
+# How the agent's runtime describes this extension's commands.
+#
+# An agent that runs `stack web ...` for a person (Stacky, on familiar) reads
+# this file: the status line it shows or says while the command runs, and
+# whether the command only reads. A command it does not find here counts as a
+# change, and the runtime then tells "That worked." after it, which is wrong
+# for a search. One entry per command, keyed by what follows `stack web`;
+# `{rest}` is the rest of the line, the question or the search words.
+
+["ask"]
+read = true
+takes = "rest"
+en = "Searching the web for “{rest}”…"
+de = "Suche im Netz nach „{rest}“…"
+
+["search"]
+read = true
+takes = "rest"
+en = "Searching the web for “{rest}”…"
+de = "Suche im Netz nach „{rest}“…"

@@ -22,7 +22,7 @@ the AI client and reaches SearXNG on the stack network. It needs the web
 stacklet up for search and core up for the model.
 """
 
-HELP = "Ask a question and get an answer with its sources"
+HELP = "Ask the internet: news, today's events, facts about the world that change; the answer lists its sources"
 
 import json
 
